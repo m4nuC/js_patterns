@@ -16,7 +16,7 @@ Promise.prototype.then = function( successCb, errorCb, doneCb ) {
     if ( successCb && typeof successCb === 'function' )  this.callbacks['1'].push(successCb);
     if ( errorCb && typeof rejectCb === 'function' )  this.callbacks['0'].push(errorCb);
 
-    // If state is define them promised is clompleted so if more callbacks are added 
+    // If state is define them promised is clompleted so if more callbacks are added
     // execute them right away
     if ( this.state ) {
         for ( var callback in this.callbacks[this.state] ) {
@@ -29,28 +29,34 @@ Promise.prototype.then = function( successCb, errorCb, doneCb ) {
     return this;
 };
 
+// Helper function to be removed from the API
+Promise.prototype.runCb = function(args) {
+    var callbacksCollection = this.callbacks[this.state];
+    for ( var callback in callbacksCollection ) {
+        if (callbacksCollection.hasOwnProperty(callback)) {
+            callbacksCollection[callback].apply(this, args);
+        }
+    }
+};
+
 
 Promise.prototype.success = function() {
     this.state = 1;
-    for ( var callback in this.callbacks[this.state] ) {
-         this.callbacks[this.state][callback].apply(this, arguments);
-    }
+    this.runCb(arguments);
 };
 
 
 Promise.prototype.error = function() {
     this.state = 0;
-    for ( var callback in this.callbacks[this.state] ) {
-        this.callbacks[this.state][callback].apply(this, arguments);
-    }
+    this.runCb(arguments);
 };
 
 
 
 
-function doAsyncStuff(delay) { 
+function doAsyncStuff(delay) {
     var promise = new Promise();
-     setTimeout( function() { 
+     setTimeout( function() {
         promise.success(delay);
      }, delay);
      return promise;
