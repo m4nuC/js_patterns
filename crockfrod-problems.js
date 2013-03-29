@@ -140,3 +140,55 @@ function once( func ) {
 		return newFunc2.apply(this, arguments);
 	};
 }
+
+
+// Write a factory function that return two functions that implements an up/down counter
+// So that: 
+// counter = counterf(10);
+// counter.inc() // 11
+// counter.dec() // 10
+
+function counterf( num ) {
+	return {
+
+		inc : function() {
+			return ++num;
+		},
+
+		dec: function() {
+			return --num;
+		}
+	};
+}
+
+function coutnerf2( num ) {
+	this.counter = num;
+
+	this.inc = function() {
+		return this.counter += 1 ;
+	};
+
+	this.dec = function() {
+		return this.counter -= 1 ;
+	};
+}
+
+// Make a revocable function that takes a nice function and returns a revoke function that denies access to the nice function, and an 
+// invoke function that can invoke the nice function until it's revoked.
+// So that : 
+// temp - revocable(alert);
+// temp.invoke('7') // alert: 7
+// temp.revoke();
+// temp.invoke('6') // throw
+
+function revocable( func ) {
+	return {
+		invoke : function() {
+			return func.apply( this, arguments);
+		},
+
+		revoke : function() {
+			func = undefined;
+		}
+	};
+}
